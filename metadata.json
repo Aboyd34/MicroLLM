@@ -1,0 +1,5 @@
+{
+  "name": "MicroLLM-4GB",
+  "description": "An ultra-constrained LLM project designed to train and run on 4GB RAM hardware, featuring a 109M parameter Llama-style architecture.",
+  "requestFramePermissions": []
+}
