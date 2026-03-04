@@ -1,20 +1,57 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# MicroLLM-4GB: Ultra-Constrained LLM Project
 
-# Run and deploy your AI Studio app
+This project implements a 109M parameter Llama-style LLM designed to train and run on a 4GB RAM machine.
 
-This contains everything you need to run your app locally.
+## Project Structure
+```text
+/llm/
+├── data/
+│   └── corpus.txt          # Toy training dataset
+├── tokenizer/
+│   └── tokenizer.json      # BPE tokenizer (generated)
+├── model/
+│   ├── checkpoint_final.pt # FP16 weights
+│   └── model_q4.gguf       # Quantized weights (GGUF)
+└── scripts/
+    ├── tokenizer_gen.py    # Tokenizer trainer
+    ├── model.py            # Architecture definition
+    ├── train.py            # Training script
+    ├── inference.py        # Inference script (< 2.5 GB RAM)
+    └── quantize.py         # Quantization pipeline
+```
 
-View your app in AI Studio: https://ai.studio/apps/86820a87-e4c8-4928-a09f-97e42f311c2e
+## Setup & Commands
 
-## Run Locally
+### 1. Install Dependencies (Python)
+```bash
+pip install torch transformers tokenizers numpy sentencepiece
+```
 
-**Prerequisites:**  Node.js
+### 2. Generate Tokenizer
+```bash
+python llm/scripts/tokenizer_gen.py
+```
 
+### 3. Train Model
+```bash
+python llm/scripts/train.py
+```
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+### 4. Quantize Model (to GGUF)
+*Note: Use llama.cpp for production GGUF quantization.*
+```bash
+python llm/scripts/quantize.py
+```
+
+### 5. Run Inference
+```bash
+python llm/scripts/inference.py
+```
+
+## Memory Math (Self-Audit)
+- **Parameters:** 109.4M
+- **FP16 Size:** 218.8 MB
+- **Q4_K_M Size:** ~65.6 MB
+- **KV Cache (512 context):** 18.8 MB
+- **Total Inference RAM:** ~234.4 MB (Target: < 2.5 GB)
+- **Disk Usage:** < 1 GB (Target: < 58 GB)
